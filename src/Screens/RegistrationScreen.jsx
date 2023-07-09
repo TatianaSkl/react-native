@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  Alert,
   ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
@@ -22,6 +23,16 @@ export const RegistrationScreen = () => {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
 
+  const onRegistration = () => {
+    if (!state.login || !state.email || !state.password) {
+      Alert.alert(`Усі поля мають бути заповнені!`);
+      return;
+    }
+    Alert.alert(`${state.login}, успішно зареєстрован!`);
+    console.log(state);
+    setState(initialState);
+  };
+
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -29,7 +40,6 @@ export const RegistrationScreen = () => {
   const keyboardHide = () => {
     setShowKeyboard(false);
     Keyboard.dismiss();
-    setState(initialState);
   };
 
   return (
@@ -38,7 +48,7 @@ export const RegistrationScreen = () => {
         <ImageBackground style={styles.image} source={require('../../assets/images/bg.jpg')}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS !== 'ios' ? -170 : -110}
+            keyboardVerticalOffset={Platform.OS !== 'ios' ? -140 : -110}
           >
             <View style={styles.form}>
               <View style={styles.fotoWrapper}>
@@ -77,7 +87,7 @@ export const RegistrationScreen = () => {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity activeOpacity={0.7} style={styles.btn} onPress={keyboardHide}>
+              <TouchableOpacity activeOpacity={0.7} style={styles.btn} onPress={onRegistration}>
                 <Text style={styles.btnText}>Зареєстуватися</Text>
               </TouchableOpacity>
               <View style={styles.wrapper}>

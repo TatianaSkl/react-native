@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  Alert,
   ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
@@ -21,6 +22,15 @@ export const LoginScreen = () => {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
 
+  const onLogin = () => {
+    if (!state.email || !state.password) {
+      Alert.alert(`Усі поля мають бути заповнені!`);
+      return;
+    }
+    console.log(state);
+    setState(initialState);
+  };
+
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -28,7 +38,6 @@ export const LoginScreen = () => {
   const keyboardHide = () => {
     setShowKeyboard(false);
     Keyboard.dismiss();
-    setState(initialState);
   };
 
   return (
@@ -65,7 +74,7 @@ export const LoginScreen = () => {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity activeOpacity={0.7} style={styles.btn} onPress={keyboardHide}>
+              <TouchableOpacity activeOpacity={0.7} style={styles.btn} onPress={onLogin}>
                 <Text style={styles.btnText}>Увійти</Text>
               </TouchableOpacity>
               <View style={styles.wrapper}>
