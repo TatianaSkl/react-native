@@ -1,6 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { Image, TextInput, TouchableOpacity } from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 
 export const CreatePostsScreen = () => {
   return (
