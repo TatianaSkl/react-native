@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import {
   Alert,
@@ -22,15 +23,26 @@ export const RegistrationScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const navigation = useNavigation();
 
   const onRegistration = () => {
     if (!state.login || !state.email || !state.password) {
       Alert.alert(`Усі поля мають бути заповнені!`);
       return;
     }
+    if (!isValidEmail(state.email)) {
+      Alert.alert('Будь ласка, введіть коректну (example@example.com) адресу електронної пошти!');
+      return;
+    }
     Alert.alert(`${state.login}, успішно зареєстрован!`);
     console.log(state);
     setState(initialState);
+    navigation.navigate('Home');
+  };
+
+  const isValidEmail = email => {
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    return emailRegex.test(email);
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -65,6 +77,7 @@ export const RegistrationScreen = () => {
               />
               <TextInput
                 style={styles.input}
+                autoComplete="email"
                 placeholder="Адреса електронної пошти"
                 placeholderTextColor="#BDBDBD"
                 onFocus={() => setShowKeyboard(true)}
@@ -74,6 +87,7 @@ export const RegistrationScreen = () => {
               <View style={styles.passwordInput}>
                 <TextInput
                   style={styles.passwordTextInput}
+                  autoComplete="password"
                   placeholder="Пароль"
                   secureTextEntry={!showPassword}
                   onFocus={() => setShowKeyboard(true)}
@@ -91,7 +105,9 @@ export const RegistrationScreen = () => {
                 <Text style={styles.btnText}>Зареєстуватися</Text>
               </TouchableOpacity>
               <View style={styles.wrapper}>
-                <Text style={styles.text}>Вже є акаунт? Увійти</Text>
+                <Text style={styles.text}>
+                  Вже є акаунт? <Text onPress={() => navigation.navigate('Увійти')}>Увійти</Text>
+                </Text>
               </View>
             </View>
           </KeyboardAvoidingView>

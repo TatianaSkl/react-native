@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import {
   Alert,
@@ -21,14 +22,25 @@ export const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const navigation = useNavigation();
 
   const onLogin = () => {
     if (!state.email || !state.password) {
       Alert.alert(`Усі поля мають бути заповнені!`);
       return;
     }
+    if (!isValidEmail(state.email)) {
+      Alert.alert('Будь ласка, введіть коректну (example@example.com) адресу електронної пошти!');
+      return;
+    }
     console.log(state);
     setState(initialState);
+    navigation.navigate('Home');
+  };
+
+  const isValidEmail = email => {
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    return emailRegex.test(email);
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -52,6 +64,7 @@ export const LoginScreen = () => {
               <Text style={styles.title}>Увійти</Text>
               <TextInput
                 style={styles.input}
+                autoComplete="email"
                 placeholder="Адреса електронної пошти"
                 placeholderTextColor="#BDBDBD"
                 onFocus={() => setShowKeyboard(true)}
@@ -61,6 +74,7 @@ export const LoginScreen = () => {
               <View style={styles.passwordInput}>
                 <TextInput
                   style={styles.passwordTextInput}
+                  autoComplete="password"
                   placeholder="Пароль"
                   secureTextEntry={!showPassword}
                   onFocus={() => setShowKeyboard(true)}
@@ -79,7 +93,13 @@ export const LoginScreen = () => {
               </TouchableOpacity>
               <View style={styles.wrapper}>
                 <Text style={styles.text}>
-                  Немає акаунту? <Text style={styles.registerLink}>Зареєструватися</Text>
+                  Немає акаунту?{' '}
+                  <Text
+                    style={styles.registerLink}
+                    onPress={() => navigation.navigate('Реєстрація')}
+                  >
+                    Зареєструватися
+                  </Text>
                 </Text>
               </View>
             </View>

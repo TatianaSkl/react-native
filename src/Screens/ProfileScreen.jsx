@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export const PostsSceen = () => {
+export const ProfileScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>PostsSceen</Text>
+      <Text>ProfileScreen</Text>
     </View>
   );
 };
