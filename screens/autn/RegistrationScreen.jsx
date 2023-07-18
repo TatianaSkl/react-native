@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import { Feather } from '@expo/vector-icons';
 import {
   Alert,
   ImageBackground,
@@ -60,11 +61,13 @@ export const RegistrationScreen = () => {
         <ImageBackground style={styles.image} source={require('../../assets/images/bg.jpg')}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS !== 'ios' ? -140 : -110}
+            keyboardVerticalOffset={Platform.OS !== 'ios' ? -150 : 0}
           >
             <View style={styles.form}>
               <View style={styles.fotoWrapper}>
-                <TouchableOpacity style={styles.fotoBtn}></TouchableOpacity>
+                <TouchableOpacity style={styles.fotoBtn}>
+                  <Feather name="plus" size={24} color="#FF6C00" />
+                </TouchableOpacity>
               </View>
               <Text style={styles.title}>Реєстрація</Text>
               <TextInput
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 50,
     marginBottom: 43,
-    padding: 16,
+    padding: 15,
     backgroundColor: '#F6F6F6',
   },
   passwordTextInput: {
@@ -189,7 +192,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginBottom: 32,
     color: '#212121',
-    fontWeight: 500,
     lineHeight: 35.16,
     letterSpacing: 0.01,
     fontFamily: 'Roboto-Medium',
@@ -205,7 +207,6 @@ const styles = StyleSheet.create({
   btnText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '400',
     fontFamily: 'Roboto-Regular',
   },
   wrapper: {
@@ -214,7 +215,6 @@ const styles = StyleSheet.create({
   text: {
     color: '#1B4371',
     fontSize: 16,
-    fontWeight: '400',
     fontFamily: 'Roboto-Regular',
   },
 });

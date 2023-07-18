@@ -3,9 +3,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFonts } from 'expo-font';
-import { LoginScreen } from './src/Screens/LoginScreen';
-import { RegistrationScreen } from './src/Screens/RegistrationScreen';
-import { Home } from './src/Screens/Home';
+import { LoginScreen } from './screens/autn/LoginScreen';
+import { RegistrationScreen } from './screens/autn/RegistrationScreen';
+import { Home } from './screens/Home';
 
 const MainStack = createStackNavigator();
 

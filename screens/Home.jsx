@@ -1,11 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Feather } from '@expo/vector-icons';
-import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { View } from 'react-native';
-import { PostsSceen } from './PostsScreen';
-import { CreatePostsScreen } from './CreatePostsScreen';
-import { ProfileScreen } from './ProfileScreen';
+import { Feather } from '@expo/vector-icons';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { PostsSceen } from './mainScreen/PostsScreen';
+import { CreatePostsScreen } from './mainScreen/CreatePostsScreen';
+import { ProfileScreen } from './mainScreen/ProfileScreen';
 
 const Tabs = createBottomTabNavigator();
 
@@ -24,34 +23,39 @@ export const Home = () => {
           }
           return iconComponent;
         },
+        tabBarShowLabel: false,
         tabBarStyle: { height: 70, justifyContent: 'center' },
         headerTitleAlign: 'center',
-        headerTitleStyle: { fontFamily: 'Roboto-Medium', fontSize: 17, fontWeight: 500 },
+        headerTitleStyle: { fontFamily: 'Roboto-Medium', fontSize: 17 },
         headerRightContainerStyle: { paddingRight: 16, paddingBottom: 10, paddingTop: 10 },
         headerLeftContainerStyle: { paddingLeft: 16, paddingBottom: 10, paddingTop: 10 },
+        headerStyle: {
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 0.5,
+          },
+          shadowOpacity: 0.3,
+          shadowRadius: 0,
+        },
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'black',
       })}
-      tabBarOptions={{
-        activeTintColor: 'tomato',
-        inactiveTintColor: 'black',
-        showLabel: false,
-      }}
     >
       <Tabs.Screen
         name="Публікації"
         component={PostsSceen}
         options={{
-          headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('Увійти')}>
-              <Feather name="log-out" size={24} color="#BDBDBD" />
-            </TouchableOpacity>
-          ),
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="Створити публікацію"
         component={CreatePostsScreen}
         options={{
-          tabBarStyle: { display: 'none' },
+          tabBarStyle: {
+            display: 'none',
+          },
           tabBarIcon: () => (
             <View style={styles.btn}>
               <Feather name="plus" size={13} color="white" />
