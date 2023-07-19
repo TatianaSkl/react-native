@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Feather } from '@expo/vector-icons';
 import {
   Alert,
@@ -13,6 +14,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { registerDB } from '../../redux/auth/operations';
 
 const initialState = {
   login: '',
@@ -25,6 +27,7 @@ export const RegistrationScreen = () => {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const onRegistration = () => {
     if (!state.login || !state.email || !state.password) {
@@ -37,6 +40,7 @@ export const RegistrationScreen = () => {
     }
     Alert.alert(`${state.login}, успішно зареєстрован!`);
     console.log(state);
+    dispatch(registerDB(state));
     setState(initialState);
     navigation.navigate('Home');
   };
