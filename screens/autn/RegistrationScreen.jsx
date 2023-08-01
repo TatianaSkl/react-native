@@ -35,11 +35,10 @@ export const RegistrationScreen = () => {
       return;
     }
     if (!isValidEmail(state.email)) {
-      Alert.alert('Будь ласка, введіть коректну (example@example.com) адресу електронної пошти!');
+      Alert.alert('Будь ласка, введіть коректну адресу електронної пошти!');
       return;
     }
     Alert.alert(`${state.login}, успішно зареєстрован!`);
-    console.log(state);
     dispatch(registerDB(state));
     setState(initialState);
     navigation.navigate('Home');

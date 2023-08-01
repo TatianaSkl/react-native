@@ -1,15 +1,21 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { DefaultScreenPosts } from '../nestedScreen/DefaultScreenPosts';
 import { CommentsScreen } from '../nestedScreen/CommentsScreen';
 import { MapScreen } from '../nestedScreen/MapScreen';
+import { authSignOutUser } from '../../redux/auth/operations';
 
 const NestedScreen = createStackNavigator();
 
 export const PostsSceen = () => {
-  const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
+
   return (
     <NestedScreen.Navigator
       screenOptions={{
@@ -35,7 +41,7 @@ export const PostsSceen = () => {
           title: 'Публікації',
           headerLeft: null,
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('Увійти')}>
+            <TouchableOpacity onPress={signOut}>
               <Feather name="log-out" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),

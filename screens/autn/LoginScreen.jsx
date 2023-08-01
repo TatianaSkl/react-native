@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   Alert,
   ImageBackground,
@@ -12,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { loginDB } from '../../redux/auth/operations';
 
 const initialState = {
   email: '',
@@ -23,6 +25,7 @@ export const LoginScreen = () => {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const onLogin = () => {
     if (!state.email || !state.password) {
@@ -33,7 +36,7 @@ export const LoginScreen = () => {
       Alert.alert('Будь ласка, введіть коректну (example@example.com) адресу електронної пошти!');
       return;
     }
-    console.log(state);
+    dispatch(loginDB(state));
     setState(initialState);
     navigation.navigate('Home');
   };
