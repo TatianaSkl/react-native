@@ -47,8 +47,24 @@ export const PostsSceen = () => {
           ),
         }}
       />
-      <NestedScreen.Screen name="Коментарі" component={CommentsScreen} />
-      <NestedScreen.Screen name="Карта" component={MapScreen} />
+      <NestedScreen.Screen
+        name="Коментарі"
+        component={CommentsScreen}
+        options={{
+          tabBarStyle: {
+            display: 'none',
+          },
+        }}
+      />
+      <NestedScreen.Screen
+        name="Карта"
+        component={MapScreen}
+        options={{
+          tabBarStyle: {
+            display: 'none',
+          },
+        }}
+      />
     </NestedScreen.Navigator>
   );
 };

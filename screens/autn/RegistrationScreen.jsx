@@ -1,10 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import * as ImagePicker from 'expo-image-picker';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Feather } from '@expo/vector-icons';
 import {
   Alert,
   ImageBackground,
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   StyleSheet,
@@ -14,6 +17,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { storage } from '../../firebase/config';
 import { registerDB } from '../../redux/auth/operations';
 
 const initialState = {
@@ -26,10 +30,11 @@ export const RegistrationScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const [avatar, setAvatar] = useState(null);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const onRegistration = () => {
+  const onRegistration = async () => {
     if (!state.login || !state.email || !state.password) {
       Alert.alert(`Усі поля мають бути заповнені!`);
       return;
@@ -39,14 +44,36 @@ export const RegistrationScreen = () => {
       return;
     }
     Alert.alert(`${state.login}, успішно зареєстрован!`);
-    dispatch(registerDB(state));
+    const userAvatar = await uploadAvatarToServer(avatar);
+    dispatch(
+      registerDB({
+        mail: state.email,
+        password: state.password,
+        login: state.login,
+        avatar: userAvatar,
+      })
+    );
     setState(initialState);
-    navigation.navigate('Home');
   };
 
   const isValidEmail = email => {
     const emailRegex = /^\S+@\S+\.\S+$/;
     return emailRegex.test(email);
+  };
+
+  const addAvatar = async () => {
+    const uploadedAvatar = await ImagePicker.launchImageLibraryAsync();
+    setAvatar(uploadedAvatar.assets[0].uri);
+  };
+
+  const uploadAvatarToServer = async () => {
+    const res = await fetch(avatar);
+    const file = await res.blob();
+    const uniqueId = Date.now().toString();
+    const storageRef = ref(storage, `usersAvatar/${uniqueId}`);
+    await uploadBytes(storageRef, file);
+    const precessedPhoto = await getDownloadURL(ref(storage, `usersAvatar/${uniqueId}`));
+    return precessedPhoto;
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -68,9 +95,22 @@ export const RegistrationScreen = () => {
           >
             <View style={styles.form}>
               <View style={styles.fotoWrapper}>
-                <TouchableOpacity style={styles.fotoBtn}>
-                  <Feather name="plus" size={24} color="#FF6C00" />
-                </TouchableOpacity>
+                <Image
+                  source={{ uri: avatar }}
+                  style={{
+                    height: 120,
+                    borderRadius: 16,
+                  }}
+                />
+                {avatar ? (
+                  <TouchableOpacity style={styles.fotoBtn} onPress={() => setAvatar(null)}>
+                    <Feather name="x-circle" size={25} color="#BDBDBD" />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity style={styles.fotoBtn} onPress={addAvatar}>
+                    <Feather name="plus-circle" size={25} color="#FF6C00" />
+                  </TouchableOpacity>
+                )}
               </View>
               <Text style={styles.title}>Реєстрація</Text>
               <TextInput
@@ -152,12 +192,8 @@ const styles = StyleSheet.create({
   },
   fotoBtn: {
     position: 'absolute',
-    width: 25,
-    height: 25,
     top: 80,
     left: 107,
-    borderWidth: 1,
-    borderColor: '#FF6C00',
     borderRadius: 100,
     backgroundColor: '#fff',
   },

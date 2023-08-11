@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PostsSceen } from './mainScreen/PostsScreen';
@@ -12,19 +12,9 @@ export const Home = () => {
   const navigation = useNavigation();
   return (
     <Tabs.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconComponent;
-
-          if (route.name === 'Публікації') {
-            iconComponent = <Feather name="grid" size={size} color={color} />;
-          } else if (route.name === 'Профіль') {
-            iconComponent = <Feather name="user" size={size} color={color} />;
-          }
-          return iconComponent;
-        },
+      screenOptions={() => ({
         tabBarShowLabel: false,
-        tabBarStyle: { height: 70, justifyContent: 'center' },
+        tabBarStyle: { paddingRight: 65, paddingLeft: 66 },
         headerTitleAlign: 'center',
         headerTitleStyle: { fontFamily: 'Roboto-Medium', fontSize: 17 },
         headerRightContainerStyle: { paddingRight: 16, paddingBottom: 10, paddingTop: 10 },
@@ -47,6 +37,11 @@ export const Home = () => {
         component={PostsSceen}
         options={{
           headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <View>
+              <Feather name="grid" size={size} color={color} />
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
@@ -62,13 +57,28 @@ export const Home = () => {
             </View>
           ),
           headerLeft: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('Публікації')}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.dispatch(CommonActions.goBack({ source: route.key }));
+              }}
+            >
               <Feather name="arrow-left" size={24} color="black" />
             </TouchableOpacity>
           ),
         }}
       />
-      <Tabs.Screen name="Профіль" component={ProfileScreen} />
+      <Tabs.Screen
+        name="Профіль"
+        component={ProfileScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size, focused }) => (
+            <View>
+              <Feather name="user" size={size} color={color} />
+            </View>
+          ),
+        }}
+      />
     </Tabs.Navigator>
   );
 };

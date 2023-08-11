@@ -36,9 +36,8 @@ export const LoginScreen = () => {
       Alert.alert('Будь ласка, введіть коректну (example@example.com) адресу електронної пошти!');
       return;
     }
-    dispatch(loginDB(state));
+    dispatch(loginDB({ mail: state.email, password: state.password }));
     setState(initialState);
-    navigation.navigate('Home');
   };
 
   const isValidEmail = email => {

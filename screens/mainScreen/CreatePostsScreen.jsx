@@ -1,8 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { Camera } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
+import * as ImagePicker from 'expo-image-picker';
+import { db, storage } from '../../firebase/config';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { addDoc, collection } from 'firebase/firestore';
 import { Feather } from '@expo/vector-icons';
 import {
   StyleSheet,
@@ -17,21 +21,13 @@ import {
 } from 'react-native';
 
 export const CreatePostsScreen = () => {
+  const [camera, setCamera] = useState(null);
   const [postPhoto, setPostPhoto] = useState(null);
   const [photoName, setPhotoName] = useState('');
   const [locationName, setLocationName] = useState('');
-  const [hasPermission, setHasPermission] = useState(null);
   const [currentLocation, setCurrentLocation] = useState({});
-  const cameraRef = useRef(null);
   const navigation = useNavigation();
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      await MediaLibrary.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+  const { userId, login } = useSelector(state => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -50,19 +46,16 @@ export const CreatePostsScreen = () => {
   }, []);
 
   const takePhoto = async () => {
-    if (cameraRef.current) {
-      const { uri } = await cameraRef.current.takePictureAsync();
-      await MediaLibrary.createAssetAsync(uri);
-      setPostPhoto(uri);
-    }
+    const { uri } = await camera.takePictureAsync();
+    setPostPhoto(uri);
   };
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
+  const uploadPhoto = async () => {
+    const uploadedPhoto = await ImagePicker.launchImageLibraryAsync();
+    if (uploadedPhoto && uploadedPhoto.assets && uploadedPhoto.assets.length > 0) {
+      setPostPhoto(uploadedPhoto.assets[0].uri);
+    }
+  };
 
   const onReset = () => {
     setPostPhoto(null);
@@ -70,9 +63,33 @@ export const CreatePostsScreen = () => {
     setLocationName('');
   };
 
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+    await addDoc(collection(db, 'posts'), {
+      login,
+      userId,
+      photo,
+      currentLocation,
+      locationName,
+      photoName,
+    });
+  };
+
+  const uploadPhotoToServer = async () => {
+    const res = await fetch(postPhoto);
+    const file = await res.blob();
+    const uniqueId = Date.now().toString();
+    const storageRef = ref(storage, `postImage/${uniqueId}`);
+    await uploadBytes(storageRef, file);
+    const precessedPhoto = await getDownloadURL(ref(storage, `postImage/${uniqueId}`));
+    return precessedPhoto;
+  };
+
   const sendPhoto = () => {
-    navigation.navigate('DefaultScreen', { postPhoto, photoName, locationName, currentLocation });
+    uploadPostToServer();
+    navigation.navigate('DefaultScreen');
     onReset();
+    console.log('first');
   };
 
   return (
@@ -87,14 +104,14 @@ export const CreatePostsScreen = () => {
             }}
           />
         ) : (
-          <Camera style={styles.fotoWrapper} ref={cameraRef}>
+          <Camera style={styles.fotoWrapper} ref={setCamera}>
             <TouchableOpacity activeOpacity={0.2} onPress={takePhoto}>
               <Image source={require('../../assets/images/foto.png')} />
             </TouchableOpacity>
           </Camera>
         )}
-        <TouchableOpacity activeOpacity={0.7} onPress={() => {}}>
-          <Text style={styles.fotoText}>{postPhoto ? 'Редагувати фото' : 'Завантажте фото'}</Text>
+        <TouchableOpacity activeOpacity={0.7} onPress={() => uploadPhoto()}>
+          <Text style={styles.fotoText}>{postPhoto ? 'Редагувати фото' : 'Завантажте фото'} </Text>
         </TouchableOpacity>
         <TextInput
           style={styles.input}
